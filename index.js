@@ -50,7 +50,8 @@ class Client {
 		}
 
 		return this._connection = Promise.resolve(this.options)
-		.then(options => redis.createClient(options));
+		.then(options => redis.createClient(options))
+		.then(client => this.setupClient(client));
 	}
 
 	/**
@@ -65,6 +66,20 @@ class Client {
 		this._options = options;
 
 		return this.connection;
+	}
+
+	/**
+	 * Setup redis client with listeners for readyness and error
+	 *
+	 * @param {object} client Redis client
+	 *
+	 * @returns {object} Redis client within a promise
+	 */
+	setupClient(client) {
+		return new Promise((resolve, reject) => {
+			client.on('error', reject);
+			client.on('ready', () => resolve(client));
+		});
 	}
 }
 
