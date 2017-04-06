@@ -1,4 +1,5 @@
 const redis = require('redis');
+const rx = require('rxjs');
 
 /**
  * Minified Redis client wrapper class that handles the connection and
@@ -80,6 +81,26 @@ class Client {
 			client.on('error', reject);
 			client.on('ready', () => resolve(client));
 		});
+	}
+
+	/**
+	 * Listens on a given channel
+	 *
+	 * @param {string} channel Channel to listen on.
+	 *
+	 * @returns {object} ReactiveX Observable
+	 */
+	listen(channel) {
+		return rx.Observable.fromPromise(this.connection)
+			.flatMap(client => {
+				client.subscribe(channel);
+
+				return rx.Observable.fromEvent(
+					client,
+					'message',
+					(channel, message) => message
+				);
+			});
 	}
 }
 
