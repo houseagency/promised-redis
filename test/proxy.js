@@ -1,6 +1,5 @@
 const expect = require('chai').expect;
 const db = (require('..'))();
-const q = require('q');
 
 describe('Database proxy', () => {
 	it('set', () => {
@@ -18,24 +17,24 @@ describe('Database proxy', () => {
 	});
 
 	it('hset', () => {
-		return q.all([
+		return Promise.all([
 			db.hset('test:hkey', 'key1', 'value'),
 			db.hset('test:hkey', 'key2', 'other value')
 		])
-		.spread((res1, res2) => {
-			expect(res1).to.be.a('number');
-			expect(res2).to.be.a('number');
+		.then(res => {
+			expect(res[0]).to.be.a('number');
+			expect(res[1]).to.be.a('number');
 		});
 	});
 
 	it('hget', () => {
-		return q.all([
+		return Promise.all([
 			db.hget('test:hkey', 'key1'),
 			db.hget('test:hkey', 'key2')
 		])
-		.spread((res1, res2) => {
-			expect(res1).to.equal('value');
-			expect(res2).to.equal('other value');
+		.then(res => {
+			expect(res[0]).to.equal('value');
+			expect(res[1]).to.equal('other value');
 		});
 	});
 

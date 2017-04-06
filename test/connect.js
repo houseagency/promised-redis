@@ -1,6 +1,5 @@
 const redis = require('..');
 const expect = require('chai').expect;
-const q = require('q');
 
 describe('Database connection', () => {
 	it('with defaults', () => {
@@ -30,7 +29,7 @@ describe('Database connection', () => {
 	});
 
 	it('with options within a promise', () => {
-		return redis(q({
+		return redis(Promise.resolve({
 			host: 'localhost',
 			port: 6379,
 			db: 0

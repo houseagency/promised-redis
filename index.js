@@ -1,6 +1,4 @@
-const _ = require('lodash');
 const redis = require('redis');
-const q = require('q');
 
 /**
  * Minified Redis client wrapper class that handles the connection and
@@ -51,7 +49,7 @@ class Client {
 			return this._connection;
 		}
 
-		return this._connection = q(this.options)
+		return this._connection = Promise.resolve(this.options)
 		.then(options => redis.createClient(options));
 	}
 
@@ -87,7 +85,25 @@ function getter(client, property) {
 		return value;
 	}
 
-	return _.wrap(property, _.wrap(client.connection, proxy));
+	return proxy.bind(client, client.connection, property);
+}
+
+/**
+ * Redis callback with binded promise resolvers.
+ *
+ * @param {function} resolve Promise resolver
+ * @param {function} reject Promise rejection
+ * @param {object} err Redis error
+ * @param {object} data Redis data
+ *
+ * @returns {void}
+ */
+function callback(resolve, reject, err, data) {
+	if (err) {
+		return reject(err);
+	}
+
+	return resolve(data);
 }
 
 /**
@@ -101,9 +117,11 @@ function getter(client, property) {
  * @returns {object} Whatever the resolved function returns
  */
 function proxy(connection, func, ...args) {
-	return connection.then(client => {
-		return q.npost(client, func, args);
-	});
+	return connection.then(client => new Promise((resolve, reject) =>
+		client[func].apply(client, args.concat(
+			callback.bind(client, resolve, reject)
+		))
+	));
 }
 
 /**
