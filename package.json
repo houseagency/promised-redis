@@ -1,7 +1,7 @@
 {
   "name": "promised-redis",
-  "version": "0.9.0",
-  "description": "Promise wrapper for Node Redis Client",
+  "version": "0.10.0",
+  "description": "Promise/RxJS wrapper for Node Redis Client",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -16,6 +16,7 @@
   "keywords": [
     "promise",
     "redis",
+    "rxjs",
     "storage",
     "database",
     "keyvalue"
