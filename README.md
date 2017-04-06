@@ -1,6 +1,8 @@
 Promised Redis
 ==============
 
+[![Build Status](https://semaphoreci.com/api/v1/houseagency/promised-redis/branches/master/shields_badge.svg)](https://semaphoreci.com/houseagency/promised-redis)
+
 Promise and RxJS wrapper for [Node Redis Client](http://redis.js.org/)
 
 Install
